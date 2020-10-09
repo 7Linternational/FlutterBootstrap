@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "522063894120",
+    "firebase_url": "https://flutterbootstrap.firebaseio.com",
+    "project_id": "flutterbootstrap",
+    "storage_bucket": "flutterbootstrap.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:522063894120:android:ed9fe4fc19ca435791cddd",
+        "android_client_info": {
+          "package_name": "com.example.flutterbootstrap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "522063894120-8intkbt3g1s7ir9v5eb5j82ojo2apf5f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQslU4hFMiZs4Joob8_Q1c_J2EnpikDrY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "522063894120-8intkbt3g1s7ir9v5eb5j82ojo2apf5f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
