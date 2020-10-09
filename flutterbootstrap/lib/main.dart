@@ -5,8 +5,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:google_fonts/google_fonts.dart';
 import "utils.dart";
+//
+import "./views/APIView.dart";
+import "./views/LoginView.dart";
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 
   runApp(MyApp());
@@ -17,7 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter Bootstrap',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -37,7 +42,16 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      initialRoute: '/',
+      routes: {
+        // When navigating to the "/" route, build the FirstScreen widget.
+        '/': (context) => MyHomePage(
+              title: "Flutter Bootstrap",
+            ),
+        // When navigating to the "/second" route, build the SecondScreen widget.
+        '/details': (context) => APIView(),
+        '/login': (context) => LoginView(),
+      },
     );
   }
 }
@@ -64,9 +78,6 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   setupCrashlytics() async {
-    // Wait for Firebase to initialize
-    await Firebase.initializeApp();
-
     if (kDebugMode) {
       // Force disable Crashlytics collection while doing every day development.
       // Temporarily toggle this to true if you want to test crash reporting in your app.
