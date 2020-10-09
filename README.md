@@ -17,7 +17,7 @@ samples, guidance on mobile development, and a full API reference.
 
 ## 3rd Party Integrations
 
-- Onesignal Push notifications `ea97cccc-1619-4cb0-a309-76ac761098e1`
+- Onesignal Push notifications
 - Firebase crashlytics
 - Google fonts
 - Basic API
