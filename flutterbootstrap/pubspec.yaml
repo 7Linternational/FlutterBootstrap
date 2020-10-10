@@ -48,6 +48,7 @@ dev_dependencies:
   cached_network_image: ^2.3.2+1
   dio: ^3.0.9
   webview_flutter: ^0.3.21
+  flutter_inappwebview: ^4.0.0+4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
