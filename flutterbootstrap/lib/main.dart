@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import "./gUser.dart";
+import './gRPC.dart';
+import "./AutoResponses.dart";
 import "utils.dart";
+import "./User.dart";
 //
 import "./views/APIView.dart";
 import "./views/LoginView.dart";
@@ -21,38 +27,40 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Bootstrap',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: createMaterialColor(Color(0xFFdb4437)),
-        textTheme: GoogleFonts.robotoTextTheme(
-          Theme.of(context).textTheme,
-        ),
-        // This makes the visual density adapt to the platform that you run
-        // the app on. For desktop platforms, the controls will be smaller and
-        // closer together (more dense) than on mobile platforms.
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      initialRoute: '/',
-      routes: {
-        // When navigating to the "/" route, build the FirstScreen widget.
-        '/': (context) => MyHomePage(
-              title: "Flutter Bootstrap",
+    return GraphQLProvider(
+        child: MaterialApp(
+          title: 'Flutter Bootstrap',
+          theme: ThemeData(
+            // This is the theme of your application.
+            //
+            // Try running your application with "flutter run". You'll see the
+            // application has a blue toolbar. Then, without quitting the app, try
+            // changing the primarySwatch below to Colors.green and then invoke
+            // "hot reload" (press "r" in the console where you ran "flutter run",
+            // or simply save your changes to "hot reload" in a Flutter IDE).
+            // Notice that the counter didn't reset back to zero; the application
+            // is not restarted.
+            primarySwatch: createMaterialColor(Color(0xFFdb4437)),
+            textTheme: GoogleFonts.robotoTextTheme(
+              Theme.of(context).textTheme,
             ),
-        // When navigating to the "/second" route, build the SecondScreen widget.
-        '/details': (context) => APIView(),
-        '/login': (context) => LoginView(),
-      },
-    );
+            // This makes the visual density adapt to the platform that you run
+            // the app on. For desktop platforms, the controls will be smaller and
+            // closer together (more dense) than on mobile platforms.
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
+          initialRoute: '/',
+          routes: {
+            // When navigating to the "/" route, build the FirstScreen widget.
+            '/': (context) => MyHomePage(
+                  title: "Flutter Bootstrap",
+                ),
+            // When navigating to the "/second" route, build the SecondScreen widget.
+            '/details': (context) => APIView(),
+            '/login': (context) => LoginView(),
+          },
+        ),
+        client: client);
   }
 }
 
@@ -76,6 +84,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  TextEditingController _controller;
+  String duckResponse;
 
   setupCrashlytics() async {
     if (kDebugMode) {
@@ -118,13 +128,20 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
+    _controller = TextEditingController();
     setupPNs();
 
     setupCrashlytics();
   }
 
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   void _incrementCounter() {
     setState(() {
+      gRPCAPI();
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
       // so that the display can reflect the updated values. If we changed
@@ -132,6 +149,16 @@ class _MyHomePageState extends State<MyHomePage> {
       // called again, and so nothing would appear to happen.
       _counter++;
     });
+  }
+
+  Future<void> sendRequest() async {
+    var str = this._controller.text;
+    print("problem: " + str);
+    FocusManager.instance.primaryFocus.unfocus();
+    this._controller.clear();
+    var list = gRPCAPI()
+        .getStreamOfResponses()
+        .then((items) => {print("items length:" + items.length.toString())});
   }
 
   @override
@@ -175,6 +202,19 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
+            User(key: UniqueKey()),
+            Padding(
+                padding: EdgeInsets.all(16.0),
+                child: TextFormField(
+                  controller: _controller,
+                  decoration: const InputDecoration(
+                    icon: Icon(Icons.error),
+                    hintText: 'Describe your problem',
+                    labelText: 'Problem...',
+                  ),
+                  onEditingComplete: sendRequest,
+                )),
+            Text((AutoResponses().responses.toList()..shuffle()).first)
           ],
         ),
       ),
